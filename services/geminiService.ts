@@ -2,8 +2,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { UserInfo, HoroscopeData } from "../types";
 
-// Always initialize GoogleGenAI with the API key from process.env.API_KEY directly
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({
+  apiKey: import.meta.env.VITE_GEMINI_API_KEY
+});
 
 export const getHoroscopeInterpretation = async (data: HoroscopeData) => {
   const { userInfo, canChiYear, element } = data;
@@ -37,9 +38,8 @@ export const getHoroscopeInterpretation = async (data: HoroscopeData) => {
   `;
 
   try {
-    // Using gemini-3-pro-preview for complex reasoning and storytelling tasks
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview",
+      model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -76,9 +76,7 @@ export const getHoroscopeInterpretation = async (data: HoroscopeData) => {
       }
     });
 
-    // Directly accessing .text property as a string
-    const text = response.text || '{}';
-    return JSON.parse(text);
+    return JSON.parse(response.text);
   } catch (error) {
     console.error("Analysis Error:", error);
     return null;
